@@ -34,10 +34,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-rosbuild_add_library(svm src/libsvm/svm.cpp)
+rosbuild_add_library(svm src/libsvm/svm.cpp src/libsvm/svmWrapper.cpp)
 
-rosbuild_add_executable(grass_test1 src/test1.cpp)
-rosbuild_add_executable(save_test src/save_test.cpp)
+rosbuild_add_executable(generateSamples src/generateSamples.cpp)
 
-rosbuild_add_executable(trainModel src/trainModel.cpp)
-target_link_libraries(trainModel svm)
+rosbuild_add_executable(predictModel src/predictModel.cpp)
+target_link_libraries(predictModel svm)

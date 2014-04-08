@@ -1,3 +1,5 @@
+/* NOT WORKING */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -8,6 +10,19 @@
 #include <fstream>
 #include <vector>
 #include "libsvm/svm.h"
+
+char NORMAL[]= "\033[0m";
+char BLACK[]= "\033[0;30m";
+char RED[]= "\033[0;31m";
+char GREEN[]= "\033[0;32m";
+char BROWN[]= "\033[0;33m";
+char BLUE[]= "\033[0;34m";
+char MAGENTA[]= "\033[0;35m";
+char CYAN[]= "\033[0;36m";
+char LIGHTGRAY[]= "\033[0;37m";
+char YELLOW[]= "\033[0;33m";
+char WHITE[]= "\033[37;01m";
+
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 
@@ -32,23 +47,33 @@ public:
 	int setTrainingData_fromFile(std::string filename, int inputDimension);
 	int saveModel( std::string name );
 	void read_problem(const char *filename);
-private:
-	std::vector<std::string> split(std::string work, char delim, int rep=0);
 	struct svm_parameter param;		
 	struct svm_problem trainData;
+private:
+	std::vector<std::string> split(std::string work, char delim, int rep=0);
 	struct svm_model *model;
 	struct svm_node *x_space;
 	int cross_validation;
 	int nr_fold;
 };
 
+void exit_with_help()
+{
+	printf(
+	"Usage: svm-train [options] training_set_file [model_file]\n"
+	"options:\n"
+	"-s show the values after storing in trainingData\n"
+	);
+	exit(1);
+}
+
+
 int main(int argc, char **argv)
 {
-	//	read_problem(input_file_name);
-	//std::String("Model");
 	SVM svm;
+	const char *error_msg;
 	svm.setTrainingData_fromFile(std::string("Samples.txt"),30*30*3);
-	//svm.read_problem("Samples2.txt");
+	error_msg = svm_check_parameter(&svm.trainData, &svm.param);
 	svm.calculateModel();
 	
 	//svm.saveModel(std::string("Model"));
@@ -61,7 +86,7 @@ int main(int argc, char **argv)
 
 SVM::SVM(){
 	param.svm_type = C_SVC;
-	param.kernel_type = RBF;
+	param.kernel_type = POLY;
 	param.degree = 3;
 	param.gamma = 0;	// 1/num_features
 	param.coef0 = 0;
@@ -165,7 +190,7 @@ int SVM::setTrainingData_fromFile(std::string filename, int inputDimension){
 	
 	trainData.y = Malloc(double,trainData.l);
 	trainData.x = Malloc(struct svm_node *,trainData.l);
-	x_space = Malloc(struct svm_node,inputDimension*trainData.l);
+	x_space = Malloc(struct svm_node,(inputDimension+1)*trainData.l);
 	
 	int j=0;
 	
@@ -190,17 +215,18 @@ int SVM::setTrainingData_fromFile(std::string filename, int inputDimension){
 		
 		for (int k=0;k<inputDimension;k++) {
 			x_space[j].index = k;
-			x_space[j].value = atoi(dataEntries[k].c_str());
+			x_space[j].value = (double)atof(dataEntries[k].c_str());
 			++j;
 		}
+		x_space[j++].index = -1;
 	}
 	if(param.gamma == 0 && inputDimension > 0) {
 		param.gamma = 1.0/max_index;
 	}
 	/*for(int i=0;i<trainData.l;i++) {
-		printf( "%d\t",(int)trainData.y[i] );
-		for(int j=0;j<inputDimension;j++) {
-			printf( "%d\t",(int)trainData.x[i][j].value );
+		printf( "%sY - %d\t%s",WHITE,(int)trainData.y[i],NORMAL );
+		for(int j=0;j<inputDimension+1;j++) {
+			printf( "%d\t",(int)trainData.x[i][j].index);
 		}
 		printf( "\n" );
 	}*/
