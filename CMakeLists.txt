@@ -40,3 +40,6 @@ rosbuild_add_executable(generateSamples src/generateSamples.cpp)
 
 rosbuild_add_executable(predictModel src/predictModel.cpp)
 target_link_libraries(predictModel svm)
+
+rosbuild_add_executable(imagePrediction src/imagePrediction.cpp)
+target_link_libraries(imagePrediction svm)

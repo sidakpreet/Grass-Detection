@@ -9,6 +9,9 @@
 #include <fstream>
 #include "libsvm/svm.h"
 
+#include <opencv2/opencv.hpp>
+
+
 class SVM{
 public:
 	SVM();
@@ -19,6 +22,7 @@ public:
 	int init(int inputDimension);
 	int predictFromFile();
 	int predict(std::vector<double> input, int &output);
+	int predict(cv::Mat input, int &output);
 private:
 	int storeOutput;
 	std::vector<double> split(std::string work, char delim, int rep=0);

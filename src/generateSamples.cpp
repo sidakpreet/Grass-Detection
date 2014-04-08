@@ -22,7 +22,7 @@ char WHITE[]= "\033[37;01m";
 
 std::ofstream commonFile,commonFile2;
 
-cv::Mat img;
+cv::Mat img,temp;
 
 std::string name;
 
@@ -34,7 +34,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 	cv::Mat imgRoi;
      if  ( event == cv::EVENT_LBUTTONDOWN ){
           std::cout << BLUE << "Saving positive sample - position (" << x << ", " << y << ")" << NORMAL << std::endl;
-          imgRoi = img(cv::Rect(x, y, size_sample, size_sample));
+          imgRoi = temp(cv::Rect(x-size_sample/2, y-size_sample/2, size_sample, size_sample));
           commonFile2<<"+1 ";
           countP=0;
           for(int i=0;i<size_sample;i++){
@@ -49,10 +49,10 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 		  }
           commonFile<<"+1"<<std::endl;
           commonFile2<<countP++<<":-1"<<std::endl;
-          cv::rectangle( img, cv::Point( x, y), cv::Point( x+size_sample, y+size_sample ), cv::Scalar( 255, 255, 255 ));
+          cv::rectangle( img, cv::Point( x-size_sample/2, y-size_sample/2 ), cv::Point( x+size_sample/2, y+size_sample/2 ), cv::Scalar( 255, 255, 255 ));
      }
      else if  ( event == cv::EVENT_RBUTTONDOWN ){
-		 imgRoi = img(cv::Rect(x, y, size_sample, size_sample));
+		 imgRoi = temp(cv::Rect(x-size_sample/2, y-size_sample/2, size_sample, size_sample));
 		 commonFile2<<"-1 ";
 		 countN=0;
           for(int i=0;i<size_sample;i++){
@@ -67,7 +67,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 		  }
           commonFile<<"-1"<<std::endl;
           commonFile2<<countN++<<":-1"<<std::endl;
-          cv::rectangle( img, cv::Point( x, y), cv::Point( x+size_sample, y+size_sample ), cv::Scalar( 0, 0, 0 ));
+          cv::rectangle( img, cv::Point( x-size_sample/2, y-size_sample/2 ), cv::Point( x+size_sample/2, y+size_sample/2 ), cv::Scalar( 0, 0, 0 ));
           
           std::cout << RED << "Saving negative sample - position (" << x << ", " << y << ")" << NORMAL << std::endl;
      }
@@ -82,6 +82,16 @@ int main(int argc, char** argv) {
 	commonFile.open("Samples.txt",std::fstream::app);
 	commonFile2.open("Samples2.txt",std::fstream::app);
 	img=cv::imread(argv[1]);
+	
+	if( argc == 3 ){
+		int temp_size_sample = atoi(argv[2]);
+		if( temp_size_sample>=5 && temp_size_sample<=30){
+			size_sample = temp_size_sample;
+		}
+	}
+	printf("Sample Size: %d\n",size_sample);
+
+	temp=img;
 	if ( img.empty() ){ 
           std::cout << "Error loading the image" << std::endl;
           return -2; 

@@ -169,3 +169,19 @@ std::vector<double> SVM::split(std::string work, char delim, int rep) {
 return d_;
 }
 
+int SVM::predict(cv::Mat _input_, int &_output_) {
+	int i=0;
+	if(_input_.cols*_input_.rows*3 != max_nr_attr ){
+		printf("Wrong Input Size.\n");
+	}
+    for(int r=0;r<_input_.rows;r++){
+	  for(int c=0;c<_input_.cols;c++){
+		x[i].index = i;
+		x[i].value = (double)_input_.at<cv::Vec3b>(r,c)[0];
+		i++;
+	  }
+	}
+	x[max_nr_attr].index=-1;
+	_output_ = svm_predict(model,x);
+return 0;
+}
