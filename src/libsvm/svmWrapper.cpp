@@ -179,6 +179,12 @@ int SVM::predict(cv::Mat _input_, int &_output_) {
 		x[i].index = i;
 		x[i].value = (double)_input_.at<cv::Vec3b>(r,c)[0];
 		i++;
+		x[i].index = i;
+		x[i].value = (double)_input_.at<cv::Vec3b>(r,c)[1];
+		i++;
+		x[i].index = i;
+		x[i].value = (double)_input_.at<cv::Vec3b>(r,c)[2];
+		i++;
 	  }
 	}
 	x[max_nr_attr].index=-1;

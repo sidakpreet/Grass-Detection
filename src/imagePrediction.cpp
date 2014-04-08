@@ -30,16 +30,9 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 	struct timeval tvalBefore, tvalAfter;
 	if  ( event == cv::EVENT_LBUTTONDOWN ){
 		gettimeofday (&tvalBefore, NULL);
-          imgRoi = img(cv::Rect(x-size_sample/2, y-size_sample/2, size_sample, size_sample));
-          for(int i=0;i<size_sample;i++){
-			  for(int j=0;j<size_sample;j++){
-				  input.push_back((double)imgRoi.at<cv::Vec3b>(i,j)[0]);
-				  input.push_back((double)imgRoi.at<cv::Vec3b>(i,j)[1]);
-				  input.push_back((double)imgRoi.at<cv::Vec3b>(i,j)[2]);
-			  }
-		  }
+          imgRoi = imgAG(cv::Rect(x-size_sample/2, y-size_sample/2, size_sample, size_sample));
           int r=99;
-          svm->predict(input, r);
+          svm->predict(imgRoi, r);
           gettimeofday (&tvalAfter, NULL);
           cv::rectangle( img, cv::Point( x-size_sample/2, y-size_sample/2 ), cv::Point( x+size_sample/2, y+size_sample/2 ), cv::Scalar( 255, 255, 255 ));
           double timeElapsed = tvalAfter.tv_sec+(tvalAfter.tv_usec/1000000.0) - (tvalBefore.tv_sec+(tvalBefore.tv_usec/1000000.0));
@@ -63,13 +56,13 @@ void grassDetection(cv::Mat &image){
 	for(int i=0;i<image.rows;i+=size_sample/2){
 		for(int j=0;j<image.cols;j+=size_sample/2){
 			if ( (image.rows-i) > size_sample && (image.cols-j) > size_sample ) {
-				imgRoi = img(cv::Rect(j, i, size_sample, size_sample));
+				imgRoi = imgAG(cv::Rect(j, i, size_sample, size_sample));
 				int r=99;
 				svm->predict(imgRoi, r);
 				if ( r == 1 ) {
 					cp++;
-					std::cout << BLUE << "Positive sample - position (" << j << ", " << i << ")" << NORMAL << std::endl;
-					cv::rectangle( img, cv::Point( j-size_sample/2, i-size_sample/2 ), cv::Point( j+size_sample/2, i+size_sample/2 ), cv::Scalar( 255, 255, 255 ));
+//					std::cout << BLUE << "Positive sample - position (" << j << ", " << i << ")" << NORMAL << std::endl;
+					cv::rectangle( img, cv::Point( j-size_sample/2, i-size_sample/2 ), cv::Point( j+size_sample/2, i+size_sample/2 ), cv::Scalar( 0, 0, 0 ),CV_FILLED);
 				}
 				else {
 					cn++;
@@ -100,7 +93,7 @@ int main(int argc, char** argv) {
 	
 	img = cv::imread(argv[1]);
 	cv::Mat result = img;
-	imgAG = img;
+	imgAG = img.clone();
 	
 	
 	if ( img.empty() ){ 

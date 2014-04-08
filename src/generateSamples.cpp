@@ -76,7 +76,7 @@ void CallBackFunc(int event, int x, int y, int flags, void* userdata)
 
 int main(int argc, char** argv) {
 	if(argc<2){
-		printf("Usage: <name> <image_file>\n");
+		printf("Usage: <name> <image_file> <optional:= kernel_size>\n");
 		return -1;
 	}
 	commonFile.open("Samples.txt",std::fstream::app);
@@ -91,15 +91,17 @@ int main(int argc, char** argv) {
 	}
 	printf("Sample Size: %d\n",size_sample);
 
-	temp=img;
+	temp=img.clone();
 	if ( img.empty() ){ 
           std::cout << "Error loading the image" << std::endl;
           return -2; 
     }
 	cv::namedWindow("Original Image");
+	cv::namedWindow("Copied from Original");
 	cv::setMouseCallback("Original Image", CallBackFunc, NULL);
 	while(true){
 		cv::imshow("Original Image",img);
+		cv::imshow("Copied from Original",temp);
 		cv::waitKey(10);
 	}
     return 0;
